@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MUSTAFA PROGRAM — Training Split & Form Library</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            void: '#07080c',
+            graphite: '#10121a',
+            graphiteHover: '#161924',
+            metallic: '#1f2433',
+            cobalt: {
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+            },
+            violetNeon: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Stealth Carbon Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #07080c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2433;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b82f6;
+    }
+
+    /* Hide scrollbar for horizontal tabs on mobile */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Atmospheric Cobalt/Violet Top Radial Glow */
+    .forge-glow {
+      background-image:
+        radial-gradient(ellipse 80% 45% at 50% -10%, rgba(59, 130, 246, 0.16), transparent),
+        radial-gradient(ellipse 60% 35% at 85% 0%, rgba(139, 92, 246, 0.12), transparent);
+    }
+
+    /* Modal transitions */
+    .modal-backdrop {
+      transition: opacity 0.2s ease-out;
+    }
+    .modal-panel {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out, max-width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-void text-[#f8fafc] min-h-screen antialiased selection:bg-cobalt-500 selection:text-white flex flex-col forge-glow">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-[90vw]"></div>
+
+  <!-- Top Navigation / Brand Header -->
+  <header class="border-b border-metallic/90 bg-void/85 backdrop-blur-xl sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cobalt-500 to-violetNeon-500 flex items-center justify-center shadow-lg shadow-cobalt-500/25 shrink-0 border border-white/10">
+          <!-- Forge Barbell & Monogram Icon -->
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11" />
+          </svg>
+        </div>
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r from-cobalt-400 to-violetNeon-400 bg-clip-text text-transparent block">
+            Hypertrophy Split & Form Library
+          </span>
+          <h1 class="text-lg sm:text-xl font-black tracking-tight text-[#f8fafc] uppercase">MUSTAFA PROGRAM</h1>
+        </div>
+      </div>
+
+      <!-- Coach / Editor Controls -->
+      <div class="flex items-center gap-2.5 self-start sm:self-auto">
+        <button id="toggleEditBtn" onclick="toggleEditMode()" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-metallic bg-graphite hover:bg-graphiteHover text-slate-200 transition flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 text-cobalt-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span id="editBtnLabel">Customize Split</span>
+        </button>
+
+        <button onclick="exportStandaloneHTML()" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-white shadow-lg shadow-cobalt-500/25 transition flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <span>Export Code</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- Edit Mode Banner (Hidden by default) -->
+    <div id="editBanner" class="hidden mb-6 p-4 rounded-2xl bg-graphite border border-cobalt-500/40 shadow-lg shadow-cobalt-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-start sm:items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-cobalt-400 mt-1.5 sm:mt-0 animate-pulse shrink-0"></span>
+        <p class="text-xs sm:text-sm text-slate-300">
+          <strong class="text-white">Split Editor Active:</strong> Add/reorder movements, paste any YouTube URL or Shorts link, and click <strong class="text-cobalt-400">Export Code</strong> to copy a deploy-ready file.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 flex-wrap">
+        <button onclick="openAddDayModal()" class="px-3 py-1.5 rounded-lg bg-cobalt-500/15 hover:bg-cobalt-500/25 border border-cobalt-500/40 text-xs font-semibold text-cobalt-400 transition cursor-pointer">
+          + New Day
+        </button>
+        <button onclick="openRenameDayModal()" class="px-3 py-1.5 rounded-lg bg-violetNeon-500/15 hover:bg-violetNeon-500/25 border border-violetNeon-500/40 text-xs font-semibold text-violetNeon-400 transition cursor-pointer">
+          Rename Day
+        </button>
+        <button onclick="resetToDefaultSplit()" class="px-3 py-1.5 rounded-lg bg-void hover:bg-graphiteHover border border-metallic text-xs font-medium text-slate-400 hover:text-slate-200 transition cursor-pointer">
+          Reset Default
+        </button>
+      </div>
+    </div>
+
+    <!-- Split Day Navigation Tabs -->
+    <div class="flex items-center justify-between gap-2 mb-6">
+      <div id="dayTabsContainer" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-1 w-full">
+        <!-- Tabs injected by JS -->
+      </div>
+    </div>
+
+    <!-- Day Header & Add Exercise Button -->
+    <div class="flex items-center justify-between mb-4 gap-3">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <h2 id="currentDayTitle" class="text-xl sm:text-2xl font-extrabold text-[#f8fafc] tracking-tight">Upper A</h2>
+          <span id="exerciseCountBadge" class="px-2.5 py-0.5 rounded-full bg-graphite border border-metallic text-[11px] font-bold text-cobalt-400">
+            4 Movements
+          </span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Tap any movement to watch its YouTube form demonstration & cues</p>
+      </div>
+      <button id="addExerciseBtn" onclick="openExerciseFormModal()" class="hidden px-4 py-2.5 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-white text-xs sm:text-sm font-bold transition items-center gap-1.5 shadow-md shadow-cobalt-500/25 cursor-pointer shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Add Exercise</span>
+      </button>
+    </div>
+
+    <!-- Exercise Cards List -->
+    <div id="exerciseListContainer" class="grid grid-cols-1 gap-3">
+      <!-- Exercise cards injected by JS -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-metallic/70 py-6 mt-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <p>&copy; <span id="yearSpan"></span> <span class="text-slate-300 font-bold tracking-wide">MUSTAFA PROGRAM</span>. All rights reserved.</p>
+      <p>Tap the <span class="text-cobalt-400 font-semibold">link icon</span> on any movement to attach your unlisted YouTube video</p>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       1. VIDEO FORM MODAL (YouTube Embed + 16:9 / 9:16 Toggle + Fallback)
+  ====================================================================== -->
+  <div id="videoModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md modal-backdrop" onclick="closeVideoModal()">
+    <div id="videoModalPanel" class="bg-graphite border border-metallic rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl shadow-cobalt-500/10 modal-panel" onclick="event.stopPropagation()">
+
+      <!-- Modal Top Header -->
+      <div class="px-5 py-4 border-b border-metallic flex items-center justify-between gap-3 bg-void/50">
+        <div class="min-w-0">
+          <span id="modalDayBadge" class="text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-cobalt-400 to-violetNeon-400 bg-clip-text text-transparent">Upper A</span>
+          <h3 id="modalExerciseName" class="text-base sm:text-lg font-bold text-[#f8fafc] truncate">Incline Dumbbell Press</h3>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Aspect Ratio Toggle (16:9 Landscape vs 9:16 Shorts) -->
+          <div class="bg-void p-1 rounded-xl border border-metallic flex items-center text-xs font-semibold">
+            <button id="ratio169Btn" onclick="setAspectRatio('16:9')" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cobalt-500 to-violetNeon-500 text-white font-bold transition cursor-pointer" title="Standard Landscape Video">
+              16:9
+            </button>
+            <button id="ratio916Btn" onclick="setAspectRatio('9:16')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer" title="Vertical YouTube Shorts">
+              9:16 Short
+            </button>
+          </div>
+
+          <!-- Close Button -->
+          <button onclick="closeVideoModal()" class="w-9 h-9 rounded-xl bg-void hover:bg-graphiteHover border border-metallic flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer" aria-label="Close modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive YouTube Embed Wrapper -->
+      <div class="bg-black flex justify-center items-center w-full relative">
+        <div id="videoAspectBox" class="relative w-full aspect-video transition-all duration-300">
+          <iframe
+            id="youtubeIframe"
+            class="absolute inset-0 w-full h-full border-0"
+            src=""
+            title="MUSTAFA PROGRAM Exercise Form Video"
+            referrerpolicy="origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+
+          <!-- Embed Restriction / Error 153 Fallback Card -->
+          <div id="embedFallbackOverlay" class="hidden absolute inset-0 bg-void/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
+            <div class="w-12 h-12 rounded-2xl bg-cobalt-500/15 border border-cobalt-500/40 flex items-center justify-center text-cobalt-400 mb-3">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-[#f8fafc] mb-1">Playback Blocked in Embedded Preview</h4>
+            <p class="text-xs text-slate-400 max-w-sm mb-4 leading-relaxed">
+              This video or preview sandbox rejected inline player configuration (Error 153). Open it directly on YouTube to watch in full quality.
+            </p>
+            <a id="overlayWatchLink" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-white text-xs sm:text-sm font-bold shadow-lg shadow-cobalt-500/25 transition inline-flex items-center gap-1.5">
+              <span>Watch on YouTube</span>
+              <span aria-hidden="true">&#8599;</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coaching Cues, Prescription & Fallback Bar -->
+      <div class="p-5 bg-graphite space-y-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cobalt-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Execution & Form Cues
+          </span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="modalSetsBadge" class="px-2.5 py-1 rounded-lg bg-void border border-metallic text-xs font-bold text-cobalt-400">
+              2 sets × 6–8 reps
+            </span>
+            <a id="modalFallbackLink" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-lg bg-violetNeon-500/15 hover:bg-violetNeon-500/25 border border-violetNeon-500/40 text-xs font-bold text-violetNeon-400 transition flex items-center gap-1">
+              <span>Open on YouTube</span>
+              <span aria-hidden="true">&#8599;</span>
+            </a>
+          </div>
+        </div>
+        <p id="modalCuesText" class="text-sm text-slate-300 leading-relaxed bg-void/90 p-3.5 rounded-xl border border-metallic">
+          Control the eccentric, pause briefly at peak stretch/contraction, and drive smoothly.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       2. ADD / EDIT EXERCISE MODAL (With Instant YouTube Link Validator)
+  ====================================================================== -->
+  <div id="exerciseFormModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="closeExerciseFormModal()">
+    <div class="bg-graphite border border-metallic rounded-2xl w-full max-w-md p-6 shadow-2xl max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 id="formModalTitle" class="text-lg font-bold text-[#f8fafc]">Edit Exercise</h3>
+        <button onclick="closeExerciseFormModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="exerciseForm" onsubmit="saveExerciseForm(event)" class="space-y-4">
+        <input type="hidden" id="editExerciseIndex" value="-1" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Exercise Name *</label>
+          <input type="text" id="inputExName" required placeholder="e.g., Leg Extensions" class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Sets & Reps *</label>
+            <input type="text" id="inputExSets" required placeholder="e.g., 2 sets x 6-8 reps" class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Video Format</label>
+            <select id="inputExRatio" class="w-full px-3 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] focus:outline-none focus:border-cobalt-500">
+              <option value="16:9">16:9 Standard</option>
+              <option value="9:16">9:16 Vertical Short</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">YouTube Video Link or 11-Char ID *</label>
+          <input
+            type="text"
+            id="inputExVideo"
+            required
+            oninput="updateVideoPreviewBadge()"
+            placeholder="Paste any YouTube link (watch, youtu.be, Shorts) or ID"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500"
+          />
+
+          <!-- Live Instant Video Parser Status & Thumbnail Preview -->
+          <div id="videoPreviewBox" class="mt-2.5 p-3 rounded-xl bg-void border border-metallic hidden">
+            <div id="videoValidState" class="hidden flex items-center gap-3">
+              <img
+                id="videoPreviewThumb"
+                src=""
+                alt="Video Thumbnail Preview"
+                class="w-20 h-12 object-cover rounded-lg border border-metallic shrink-0 bg-graphite"
+                onerror="this.src='https://placehold.co/160x90/10121a/60a5fa?text=YouTube+ID'"
+              />
+              <div class="min-w-0">
+                <span class="inline-flex items-center gap-1 text-xs font-bold text-cobalt-400">
+                  &#10003; Valid Video ID: <code id="parsedIdLabel" class="bg-cobalt-500/15 px-1.5 py-0.5 rounded text-violetNeon-400"></code>
+                </span>
+                <p class="text-[11px] text-slate-400 mt-1 truncate">Ready to embed & play on click</p>
+              </div>
+            </div>
+            <div id="videoInvalidState" class="hidden text-xs text-amber-400 font-medium">
+              &#9888; Could not detect an 11-character YouTube Video ID yet. Paste a full YouTube URL or 11-character ID.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Form & Coaching Cues</label>
+          <textarea id="inputExCues" rows="3" placeholder="Key setup points, tempo, and execution cues..." class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500"></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeExerciseFormModal()" class="px-4 py-2.5 rounded-xl bg-void hover:bg-graphiteHover border border-metallic text-xs font-semibold text-slate-300 transition cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-xs font-bold text-white shadow-lg shadow-cobalt-500/20 transition cursor-pointer">
+            Save Movement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       3. ADD SPLIT DAY MODAL
+  ====================================================================== -->
+  <div id="addDayModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="closeAddDayModal()">
+    <div class="bg-graphite border border-metallic rounded-2xl w-full max-w-sm p-6 shadow-2xl" onclick="event.stopPropagation()">
+      <h3 class="text-lg font-bold text-[#f8fafc] mb-4">Add Training Day</h3>
+      <form onsubmit="saveNewDay(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Day Name (e.g., Push, Pull, Legs, Arms)</label>
+          <input type="text" id="inputNewDayName" required placeholder="e.g., Push A" class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeAddDayModal()" class="px-4 py-2 rounded-xl bg-void border border-metallic text-xs font-semibold text-slate-300 cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-xs font-bold text-white cursor-pointer">Create Day</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       4. RENAME SPLIT DAY MODAL
+  ====================================================================== -->
+  <div id="renameDayModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="closeRenameDayModal()">
+    <div class="bg-graphite border border-metallic rounded-2xl w-full max-w-sm p-6 shadow-2xl" onclick="event.stopPropagation()">
+      <h3 class="text-lg font-bold text-[#f8fafc] mb-4">Rename Training Day</h3>
+      <form onsubmit="saveRenamedDay(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">New Name for "<span id="renameTargetLabel"></span>"</label>
+          <input type="text" id="inputRenameDay" required class="w-full px-3.5 py-2.5 rounded-xl bg-void border border-metallic text-sm text-[#f8fafc] placeholder-slate-500 focus:outline-none focus:border-cobalt-500" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeRenameDayModal()" class="px-4 py-2 rounded-xl bg-void border border-metallic text-xs font-semibold text-slate-300 cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-xs font-bold text-white cursor-pointer">Save Name</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       APPLICATION STATE & LOGIC
+  ====================================================================== -->
+  <script>
+    // Default Structured Upper/Lower Split for MUSTAFA PROGRAM
+    const DEFAULT_SPLIT_DATA = {
+      "Upper A": [
+        {
+          name: "Incline Dumbbell Press",
+          sets: "2 sets x 6-8 reps",
+          videoId: "8iPEnn-ltC8",
+          aspect: "16:9",
+          cues: "Set bench to 30°. Retract scapulae, tuck elbows at a 45° angle, lower dumbbells under control for 3 seconds to a deep chest stretch, and press smoothly."
+        },
+        {
+          name: "Chest-Supported Row",
+          sets: "3 sets x 8-10 reps",
+          videoId: "H75im9fAUMc",
+          aspect: "16:9",
+          cues: "Keep chest firmly against the pad throughout. Allow shoulders to protract at the bottom for a full upper-back stretch, then drive elbows back and squeeze."
+        },
+        {
+          name: "Cable Lateral Raise",
+          sets: "3 sets x 8-10 reps",
+          videoId: "PPrzBWZDOhA",
+          aspect: "16:9",
+          cues: "Set pulley at wrist height. Sweep the weight out toward the wall rather than lifting up; keep traps depressed and pause briefly at shoulder height."
+        },
+        {
+          name: "Overhead Tricep Extension",
+          sets: "2 sets x 8-10 reps",
+          videoId: "2-LAMcpzODU",
+          aspect: "16:9",
+          cues: "Keep upper arms locked beside your ears. Allow elbows to bend fully for maximum long-head stretch before extending smoothly to lockout."
+        }
+      ],
+      "Lower A": [
+        {
+          name: "Leg Extensions",
+          sets: "2 sets x 6-8 reps",
+          videoId: "YyvSfVjQeL0",
+          aspect: "16:9",
+          cues: "Pull yourself down into the seat using the side handles. Kick up powerfully, hold a 1-second peak quad contraction at the top, and control a 3-second eccentric."
+        },
+        {
+          name: "Leg Curl",
+          sets: "2 sets x 6-8 reps",
+          videoId: "ELOCsoDSmrg",
+          aspect: "16:9",
+          cues: "Lock the pad down snugly and keep hips pressed into the bench. Drive heels back explosively and resist the weight slowly back to full knee extension."
+        },
+        {
+          name: "Hack Squat",
+          sets: "2 sets x 6-8 reps",
+          videoId: "0tn5K9NlCfo",
+          aspect: "16:9",
+          cues: "Place feet low to mid-platform with heels flat. Brace core, descend under strict control into deep knee flexion, and drive hard out of the bottom."
+        },
+        {
+          name: "Abductors",
+          sets: "2 sets x 6-8 reps",
+          videoId: "G_8LItOiZ0Q",
+          aspect: "16:9",
+          cues: "Sit tall with lower back supported. Push knees outward smoothly against the pads, pause briefly at full abduction, and control the return."
+        },
+        {
+          name: "Standing Calf Raises",
+          sets: "2 sets x 6-8 reps",
+          videoId: "-M4-G8p8fmc",
+          aspect: "16:9",
+          cues: "Pause for 2 full seconds in the deep bottom stretch on every rep to eliminate Achilles bounce, then drive up onto your big toe."
+        },
+        {
+          name: "Abs Crunches Machine",
+          sets: "2 sets x 6-8 reps",
+          videoId: "2fbujeH3F0E",
+          aspect: "16:9",
+          cues: "Exhale forcefully and curl your ribcage down toward your pelvis through spinal flexion rather than pulling with your arms or hip flexors."
+        }
+      ],
+      "Upper B": [
+        {
+          name: "Lat Pulldown",
+          sets: "3 sets x 8-10 reps",
+          videoId: "CAwf7n6Luuc",
+          aspect: "16:9",
+          cues: "Keep torso nearly upright with a slight chest lift. Drive elbows down toward your front pockets and control the bar all the way back to a full lat stretch."
+        },
+        {
+          name: "Machine Chest Press",
+          sets: "2 sets x 6-8 reps",
+          videoId: "xUm0BiZCWlQ",
+          aspect: "16:9",
+          cues: "Align handles with mid-chest. Keep shoulder blades pinned against the back pad and avoid rolling shoulders forward at lockout."
+        },
+        {
+          name: "Preacher Curl",
+          sets: "2 sets x 8-10 reps",
+          videoId: "soxrZlIl35U",
+          aspect: "16:9",
+          cues: "Keep backs of arms flush against the pad. Lower the weight under control until elbows are nearly straight, then curl smoothly without lifting shoulders."
+        },
+        {
+          name: "Reverse Pec Deck",
+          sets: "3 sets x 8-10 reps",
+          videoId: "5YK4bgzXDp0",
+          aspect: "16:9",
+          cues: "Use a neutral grip and sweep hands out in a wide arc. Focus on moving the upper arm back without pinching shoulder blades together."
+        }
+      ],
+      "Lower B": [
+        {
+          name: "Leg Extensions",
+          sets: "2 sets x 6-8 reps",
+          videoId: "YyvSfVjQeL0",
+          aspect: "16:9",
+          cues: "Pull yourself down into the seat using the side handles. Kick up powerfully, hold a 1-second peak quad contraction at the top, and control a 3-second eccentric."
+        },
+        {
+          name: "Leg Curl",
+          sets: "2 sets x 6-8 reps",
+          videoId: "ELOCsoDSmrg",
+          aspect: "16:9",
+          cues: "Lock the pad down snugly and keep hips pressed into the bench. Drive heels back explosively and resist the weight slowly back to full knee extension."
+        },
+        {
+          name: "Hack Squat",
+          sets: "2 sets x 6-8 reps",
+          videoId: "0tn5K9NlCfo",
+          aspect: "16:9",
+          cues: "Place feet low to mid-platform with heels flat. Brace core, descend under strict control into deep knee flexion, and drive hard out of the bottom."
+        },
+        {
+          name: "Abductors",
+          sets: "2 sets x 6-8 reps",
+          videoId: "G_8LItOiZ0Q",
+          aspect: "16:9",
+          cues: "Sit tall with lower back supported. Push knees outward smoothly against the pads, pause briefly at full abduction, and control the return."
+        },
+        {
+          name: "Standing Calf Raises",
+          sets: "2 sets x 6-8 reps",
+          videoId: "-M4-G8p8fmc",
+          aspect: "16:9",
+          cues: "Pause for 2 full seconds in the deep bottom stretch on every rep to eliminate Achilles bounce, then drive up onto your big toe."
+        },
+        {
+          name: "Abs Crunches Machine",
+          sets: "2 sets x 6-8 reps",
+          videoId: "2fbujeH3F0E",
+          aspect: "16:9",
+          cues: "Exhale forcefully and curl your ribcage down toward your pelvis through spinal flexion rather than pulling with your arms or hip flexors."
+        }
+      ]
+    };
+
+    const STORAGE_KEY = "mustafa_program_v3";
+
+    let splitData = loadSplitData();
+    let activeDay = Object.keys(splitData)[0] || "Upper A";
+    let isEditMode = false;
+
+    function loadSplitData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+            return parsed;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not read localStorage:", e);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_SPLIT_DATA));
+    }
+
+    function saveSplitData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(splitData));
+      } catch (e) {
+        console.warn("Could not save to localStorage:", e);
+      }
+    }
+
+    // =====================================================================
+    // BULLETPROOF YOUTUBE LINK & ID PARSER
+    // =====================================================================
+    function extractYouTubeId(input) {
+      if (!input) return "";
+      const trimmed = String(input).trim();
+
+      // 1. Direct 11-character Video ID check
+      if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+        return trimmed;
+      }
+
+      // 2. Standard URL parsing
+      try {
+        const urlStr = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+        const urlObj = new URL(urlStr);
+        const hostname = urlObj.hostname.replace(/^www\.|^m\./i, "").toLowerCase();
+
+        if (hostname === "youtu.be") {
+          const id = urlObj.pathname.split("/").filter(Boolean)[0];
+          if (id && /^[a-zA-Z0-9_-]{11}$/.test(id)) return id;
+        }
+
+        if (hostname.endsWith("youtube.com") || hostname.endsWith("youtube-nocookie.com")) {
+          const vParam = urlObj.searchParams.get("v");
+          if (vParam && /^[a-zA-Z0-9_-]{11}$/.test(vParam)) return vParam;
+
+          const segments = urlObj.pathname.split("/").filter(Boolean);
+          if (segments.length >= 2 && ["shorts", "embed", "v", "live"].includes(segments[0])) {
+            const pathId = segments[1];
+            if (/^[a-zA-Z0-9_-]{11}$/.test(pathId)) return pathId;
+          }
+        }
+      } catch (e) {
+        // Fallback to regex below
+      }
+
+      // 3. Comprehensive Regex Fallback
+      const regexList = [
+        /(?:youtube\.com\/(?:watch\?.*v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /[?&]v=([a-zA-Z0-9_-]{11})/
+      ];
+      for (const rx of regexList) {
+        const match = trimmed.match(rx);
+        if (match && match[1]) return match[1];
+      }
+
+      return "";
+    }
+
+    // Live Preview Updater inside Exercise Editor Modal
+    function updateVideoPreviewBadge() {
+      const rawVal = document.getElementById("inputExVideo").value;
+      const previewBox = document.getElementById("videoPreviewBox");
+      const validState = document.getElementById("videoValidState");
+      const invalidState = document.getElementById("videoInvalidState");
+      const thumbImg = document.getElementById("videoPreviewThumb");
+      const idLabel = document.getElementById("parsedIdLabel");
+
+      if (!rawVal.trim()) {
+        previewBox.classList.add("hidden");
+        return;
+      }
+
+      previewBox.classList.remove("hidden");
+      const parsedId = extractYouTubeId(rawVal);
+
+      if (parsedId) {
+        validState.classList.remove("hidden");
+        invalidState.classList.add("hidden");
+        idLabel.textContent = parsedId;
+        thumbImg.src = `https://img.youtube.com/vi/${parsedId}/mqdefault.jpg`;
+
+        if (/\/shorts\//i.test(rawVal)) {
+          document.getElementById("inputExRatio").value = "9:16";
+        }
+      } else {
+        validState.classList.add("hidden");
+        invalidState.classList.remove("hidden");
+      }
+    }
+
+    // Toast Notification Helper
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      const accentBorder = type === "error" ? "border-rose-500/50" : "border-cobalt-500/50";
+      toast.className = `pointer-events-auto bg-graphite border ${accentBorder} text-[#f8fafc] px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transform transition-all duration-300 translate-y-2 opacity-0`;
+
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-rose-500' : 'bg-cobalt-400'} shrink-0"></span>
+        <span>${escapeHTML(message)}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("translate-y-2", "opacity-0");
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    // Render Day Tabs
+    function renderTabs() {
+      const container = document.getElementById("dayTabsContainer");
+      container.innerHTML = "";
+      const days = Object.keys(splitData);
+
+      if (!days.includes(activeDay) && days.length > 0) {
+        activeDay = days[0];
+      }
+
+      days.forEach(day => {
+        const isActive = day === activeDay;
+        const wrapper = document.createElement("div");
+        wrapper.className = "flex items-center shrink-0";
+
+        const btn = document.createElement("button");
+        btn.className = isActive
+          ? "px-4 py-2.5 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-cobalt-500/25 transition cursor-pointer"
+          : "px-4 py-2.5 rounded-xl bg-graphite hover:bg-graphiteHover border border-metallic text-slate-400 hover:text-[#f8fafc] font-semibold text-xs sm:text-sm transition cursor-pointer";
+        btn.textContent = day;
+        btn.onclick = () => {
+          activeDay = day;
+          renderTabs();
+          renderExercises();
+        };
+        wrapper.appendChild(btn);
+
+        // Delete Day Button in Edit Mode
+        if (isEditMode && days.length > 1) {
+          const delBtn = document.createElement("button");
+          delBtn.className = "ml-1 p-1.5 rounded-lg bg-void hover:bg-rose-950 text-slate-500 hover:text-rose-400 border border-metallic text-xs cursor-pointer";
+          delBtn.title = `Remove ${day}`;
+          delBtn.innerHTML = "&times;";
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            delete splitData[day];
+            saveSplitData();
+            activeDay = Object.keys(splitData)[0];
+            renderTabs();
+            renderExercises();
+            showToast(`Removed "${day}" from split`);
+          };
+          wrapper.appendChild(delBtn);
+        }
+
+        container.appendChild(wrapper);
+      });
+    }
+
+    // Move Exercise Up/Down in Edit Mode
+    function moveExercise(index, direction) {
+      const list = splitData[activeDay];
+      if (!list) return;
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= list.length) return;
+
+      const temp = list[index];
+      list[index] = list[targetIndex];
+      list[targetIndex] = temp;
+
+      saveSplitData();
+      renderExercises();
+    }
+
+    // Render Exercise Cards for Active Day
+    function renderExercises() {
+      const listContainer = document.getElementById("exerciseListContainer");
+      const dayTitle = document.getElementById("currentDayTitle");
+      const countBadge = document.getElementById("exerciseCountBadge");
+      const exercises = splitData[activeDay] || [];
+
+      dayTitle.textContent = activeDay;
+      countBadge.textContent = `${exercises.length} ${exercises.length === 1 ? "Movement" : "Movements"}`;
+      listContainer.innerHTML = "";
+
+      if (exercises.length === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 rounded-2xl bg-graphite border border-dashed border-metallic text-center">
+            <p class="text-sm text-slate-400 mb-3">No movements added to <strong class="text-white">${escapeHTML(activeDay)}</strong> yet.</p>
+            <button onclick="openExerciseFormModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt-500 to-violetNeon-500 hover:from-cobalt-400 hover:to-violetNeon-400 text-xs font-bold text-white cursor-pointer">
+              + Add First Movement
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      exercises.forEach((ex, index) => {
+        const card = document.createElement("div");
+        card.className = "group bg-graphite hover:bg-graphiteHover border border-metallic hover:border-cobalt-500/60 rounded-2xl p-4 sm:p-5 transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer shadow-sm";
+
+        card.onclick = () => openVideoModal(ex);
+
+        const isVertical = ex.aspect === "9:16";
+
+        card.innerHTML = `
+          <div class="flex items-start sm:items-center gap-3.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-void border border-metallic flex items-center justify-center text-xs font-bold text-slate-400 group-hover:text-cobalt-400 group-hover:border-cobalt-500/50 shrink-0 transition">
+              ${index + 1}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-sm sm:text-base font-bold text-[#f8fafc] group-hover:text-white truncate">${escapeHTML(ex.name)}</h3>
+                ${isVertical ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-violetNeon-500/15 text-violetNeon-400 border border-violetNeon-500/30">Short</span>` : ""}
+              </div>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5 font-medium">${escapeHTML(ex.sets)}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <!-- Direct Quick-Edit Link Icon Button -->
+            <button onclick="event.stopPropagation(); openExerciseFormModal(${index}, true)" class="p-2.5 rounded-xl bg-void hover:bg-graphiteHover border border-metallic hover:border-cobalt-500/50 text-slate-400 hover:text-cobalt-400 transition cursor-pointer" title="Paste / Edit YouTube Link">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            </button>
+
+            ${isEditMode ? `
+              <button onclick="event.stopPropagation(); moveExercise(${index}, -1)" ${index === 0 ? "disabled" : ""} class="p-2 rounded-xl bg-void hover:bg-graphiteHover border border-metallic text-slate-400 hover:text-white disabled:opacity-30 transition cursor-pointer" title="Move Up">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+              <button onclick="event.stopPropagation(); moveExercise(${index}, 1)" ${index === exercises.length - 1 ? "disabled" : ""} class="p-2 rounded-xl bg-void hover:bg-graphiteHover border border-metallic text-slate-400 hover:text-white disabled:opacity-30 transition cursor-pointer" title="Move Down">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <button onclick="event.stopPropagation(); openExerciseFormModal(${index}, false)" class="p-2 rounded-xl bg-void hover:bg-graphiteHover border border-metallic text-slate-300 hover:text-cobalt-400 transition cursor-pointer" title="Edit Movement">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button onclick="event.stopPropagation(); deleteExercise(${index})" class="p-2 rounded-xl bg-void hover:bg-rose-950/60 border border-metallic hover:border-rose-800 text-slate-400 hover:text-rose-400 transition cursor-pointer" title="Delete Movement">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            ` : `
+              <span class="px-3.5 py-2 rounded-xl bg-void group-hover:bg-gradient-to-r group-hover:from-cobalt-500 group-hover:to-violetNeon-500 border border-metallic group-hover:border-transparent text-xs font-bold text-slate-300 group-hover:text-white transition flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span>Form</span>
+              </span>
+            `}
+          </div>
+        `;
+
+        listContainer.appendChild(card);
+      });
+    }
+
+    function escapeHTML(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // =====================================================================
+    // VIDEO MODAL PLAYER
+    // =====================================================================
+    let embedCheckTimer = null;
+
+    function showEmbedFallback(cleanId) {
+      const overlay = document.getElementById("embedFallbackOverlay");
+      const overlayLink = document.getElementById("overlayWatchLink");
+      overlayLink.href = cleanId
+        ? `https://www.youtube.com/watch?v=${cleanId}`
+        : "https://www.youtube.com";
+      overlay.classList.remove("hidden");
+      overlay.classList.add("flex");
+    }
+
+    function hideEmbedFallback() {
+      const overlay = document.getElementById("embedFallbackOverlay");
+      overlay.classList.add("hidden");
+      overlay.classList.remove("flex");
+    }
+
+    function openVideoModal(exercise) {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("youtubeIframe");
+      const dayBadge = document.getElementById("modalDayBadge");
+      const titleEl = document.getElementById("modalExerciseName");
+      const setsBadge = document.getElementById("modalSetsBadge");
+      const cuesEl = document.getElementById("modalCuesText");
+      const fallbackLink = document.getElementById("modalFallbackLink");
+
+      const cleanId = extractYouTubeId(exercise.videoId);
+
+      if (embedCheckTimer) {
+        clearTimeout(embedCheckTimer);
+        embedCheckTimer = null;
+      }
+      hideEmbedFallback();
+
+      dayBadge.textContent = activeDay;
+      titleEl.textContent = exercise.name;
+      setsBadge.textContent = exercise.sets;
+      cuesEl.textContent = exercise.cues || "Control the eccentric, pause briefly at peak stretch/contraction, and maintain strict posture.";
+
+      fallbackLink.href = cleanId
+        ? `https://www.youtube.com/watch?v=${cleanId}`
+        : "https://www.youtube.com";
+
+      setAspectRatio(exercise.aspect || "16:9");
+
+      if (cleanId) {
+        iframe.onload = () => {
+          if (embedCheckTimer) clearTimeout(embedCheckTimer);
+        };
+        iframe.onerror = () => {
+          showEmbedFallback(cleanId);
+        };
+        // Clean standard YouTube embed URL without conflicting origin/referrer parameters
+        iframe.src = `https://www.youtube.com/embed/${cleanId}?playsinline=1&rel=0`;
+
+        // If a sandboxed or restricted frame prevents iframe load completion, surface direct watch CTA
+        embedCheckTimer = setTimeout(() => {
+          try {
+            const rect = iframe.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+              showEmbedFallback(cleanId);
+            }
+          } catch (_) {
+            // Keep clean iframe view if accessible
+          }
+        }, 2500);
+      } else {
+        iframe.src = "";
+        showEmbedFallback("");
+      }
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("youtubeIframe");
+
+      if (embedCheckTimer) {
+        clearTimeout(embedCheckTimer);
+        embedCheckTimer = null;
+      }
+      hideEmbedFallback();
+
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      iframe.onload = null;
+      iframe.onerror = null;
+      iframe.src = "";
+      document.body.style.overflow = "";
+    }
+
+    function setAspectRatio(ratio) {
+      const panel = document.getElementById("videoModalPanel");
+      const box = document.getElementById("videoAspectBox");
+      const btn169 = document.getElementById("ratio169Btn");
+      const btn916 = document.getElementById("ratio916Btn");
+
+      if (ratio === "9:16") {
+        panel.classList.remove("max-w-2xl");
+        panel.classList.add("max-w-sm");
+        box.classList.remove("aspect-video");
+        box.classList.add("aspect-[9/16]", "max-h-[62vh]");
+
+        btn916.className = "px-2.5 py-1 rounded-lg bg-gradient-to-r from-cobalt-500 to-violetNeon-500 text-white font-bold transition cursor-pointer";
+        btn169.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
+      } else {
+        panel.classList.remove("max-w-sm");
+        panel.classList.add("max-w-2xl");
+        box.classList.remove("aspect-[9/16]", "max-h-[62vh]");
+        box.classList.add("aspect-video");
+
+        btn169.className = "px-2.5 py-1 rounded-lg bg-gradient-to-r from-cobalt-500 to-violetNeon-500 text-white font-bold transition cursor-pointer";
+        btn916.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
+      }
+    }
+
+    // Close modals on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeVideoModal();
+        closeExerciseFormModal();
+        closeAddDayModal();
+        closeRenameDayModal();
+      }
+    });
+
+    // =====================================================================
+    // CUSTOMIZE SPLIT & EXERCISE LINK EDITOR
+    // =====================================================================
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const banner = document.getElementById("editBanner");
+      const addBtn = document.getElementById("addExerciseBtn");
+      const label = document.getElementById("editBtnLabel");
+      const toggleBtn = document.getElementById("toggleEditBtn");
+
+      if (isEditMode) {
+        banner.classList.remove("hidden");
+        addBtn.classList.remove("hidden");
+        addBtn.classList.add("flex");
+        label.textContent = "Done Editing";
+        toggleBtn.classList.add("border-cobalt-500", "text-white");
+      } else {
+        banner.classList.add("hidden");
+        addBtn.classList.add("hidden");
+        addBtn.classList.remove("flex");
+        label.textContent = "Customize Split";
+        toggleBtn.classList.remove("border-cobalt-500", "text-white");
+      }
+
+      renderTabs();
+      renderExercises();
+    }
+
+    function openExerciseFormModal(index = -1, focusVideo = false) {
+      const modal = document.getElementById("exerciseFormModal");
+      const title = document.getElementById("formModalTitle");
+      const idxInput = document.getElementById("editExerciseIndex");
+      const nameInput = document.getElementById("inputExName");
+      const setsInput = document.getElementById("inputExSets");
+      const ratioInput = document.getElementById("inputExRatio");
+      const videoInput = document.getElementById("inputExVideo");
+      const cuesInput = document.getElementById("inputExCues");
+
+      idxInput.value = index;
+
+      if (index >= 0 && splitData[activeDay][index]) {
+        const ex = splitData[activeDay][index];
+        title.textContent = focusVideo ? `Update Video Link — ${ex.name}` : "Edit Movement";
+        nameInput.value = ex.name;
+        setsInput.value = ex.sets;
+        ratioInput.value = ex.aspect || "16:9";
+        videoInput.value = ex.videoId;
+        cuesInput.value = ex.cues || "";
+      } else {
+        title.textContent = `Add Movement to ${activeDay}`;
+        nameInput.value = "";
+        setsInput.value = activeDay.toLowerCase().includes("lower") ? "2 sets x 6-8 reps" : "3 sets x 8-10 reps";
+        ratioInput.value = "16:9";
+        videoInput.value = "";
+        cuesInput.value = "";
+      }
+
+      updateVideoPreviewBadge();
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      if (focusVideo) {
+        videoInput.focus();
+        videoInput.select();
+      } else {
+        nameInput.focus();
+      }
+    }
+
+    function closeExerciseFormModal() {
+      const modal = document.getElementById("exerciseFormModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function saveExerciseForm(e) {
+      e.preventDefault();
+      const index = parseInt(document.getElementById("editExerciseIndex").value, 10);
+      const name = document.getElementById("inputExName").value.trim();
+      const sets = document.getElementById("inputExSets").value.trim();
+      const aspect = document.getElementById("inputExRatio").value;
+      const rawVideo = document.getElementById("inputExVideo").value.trim();
+      const cues = document.getElementById("inputExCues").value.trim();
+
+      const videoId = extractYouTubeId(rawVideo);
+      if (!videoId) {
+        showToast("Invalid YouTube URL or ID. Paste a valid YouTube link or 11-character ID.", "error");
+        return;
+      }
+
+      const entry = { name, sets, videoId, aspect, cues };
+
+      if (!splitData[activeDay]) splitData[activeDay] = [];
+
+      if (index >= 0) {
+        splitData[activeDay][index] = entry;
+        showToast(`Saved "${name}" (Video ID: ${videoId})`);
+      } else {
+        splitData[activeDay].push(entry);
+        showToast(`Added "${name}" to ${activeDay}`);
+      }
+
+      saveSplitData();
+      closeExerciseFormModal();
+      renderExercises();
+    }
+
+    function deleteExercise(index) {
+      const removed = splitData[activeDay].splice(index, 1);
+      saveSplitData();
+      renderExercises();
+      if (removed[0]) {
+        showToast(`Removed "${removed[0].name}"`);
+      }
+    }
+
+    // Add Day Modal Handlers
+    function openAddDayModal() {
+      const modal = document.getElementById("addDayModal");
+      document.getElementById("inputNewDayName").value = "";
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.getElementById("inputNewDayName").focus();
+    }
+
+    function closeAddDayModal() {
+      const modal = document.getElementById("addDayModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function saveNewDay(e) {
+      e.preventDefault();
+      const name = document.getElementById("inputNewDayName").value.trim();
+      if (!name) return;
+
+      if (splitData[name]) {
+        showToast(`"${name}" already exists in your split.`, "error");
+        return;
+      }
+
+      splitData[name] = [];
+      activeDay = name;
+      saveSplitData();
+      closeAddDayModal();
+      renderTabs();
+      renderExercises();
+      showToast(`Created day "${name}"`);
+    }
+
+    // Rename Day Modal Handlers
+    function openRenameDayModal() {
+      const modal = document.getElementById("renameDayModal");
+      document.getElementById("renameTargetLabel").textContent = activeDay;
+      const input = document.getElementById("inputRenameDay");
+      input.value = activeDay;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      input.focus();
+      input.select();
+    }
+
+    function closeRenameDayModal() {
+      const modal = document.getElementById("renameDayModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function saveRenamedDay(e) {
+      e.preventDefault();
+      const newName = document.getElementById("inputRenameDay").value.trim();
+      if (!newName || newName === activeDay) {
+        closeRenameDayModal();
+        return;
+      }
+      if (splitData[newName]) {
+        showToast(`"${newName}" already exists.`, "error");
+        return;
+      }
+
+      const updatedSplit = {};
+      Object.keys(splitData).forEach(key => {
+        if (key === activeDay) {
+          updatedSplit[newName] = splitData[key];
+        } else {
+          updatedSplit[key] = splitData[key];
+        }
+      });
+
+      splitData = updatedSplit;
+      activeDay = newName;
+      saveSplitData();
+      closeRenameDayModal();
+      renderTabs();
+      renderExercises();
+      showToast(`Renamed day to "${newName}"`);
+    }
+
+    function resetToDefaultSplit() {
+      splitData = JSON.parse(JSON.stringify(DEFAULT_SPLIT_DATA));
+      activeDay = Object.keys(splitData)[0];
+      saveSplitData();
+      renderTabs();
+      renderExercises();
+      showToast("Restored default MUSTAFA PROGRAM split");
+    }
+
+    // =====================================================================
+    // EXPORT STANDALONE HTML FOR GITHUB / VERCEL DEPLOYMENT
+    // =====================================================================
+    function exportStandaloneHTML() {
+      const currentDocHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const serializedData = JSON.stringify(splitData, null, 6);
+
+      const updatedHTML = currentDocHTML.replace(
+        /const DEFAULT_SPLIT_DATA = \{[\s\S]*?\n    \};/,
+        `const DEFAULT_SPLIT_DATA = ${serializedData};`
+      );
+
+      const textArea = document.createElement("textarea");
+      textArea.value = updatedHTML;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      try {
+        document.execCommand("copy");
+        showToast("MUSTAFA PROGRAM HTML copied! Ready to paste into GitHub/Vercel.");
+      } catch (err) {
+        showToast("Could not copy automatically. Check browser permissions.", "error");
+      } finally {
+        document.body.removeChild(textArea);
+      }
+    }
+
+    // Initialize App
+    document.getElementById("yearSpan").textContent = new Date().getFullYear();
+    renderTabs();
+    renderExercises();
+  </script>
+</body>
+</html>
