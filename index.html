@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MUSTAFA PROGRAM — Workout Split</title>
+<meta name="theme-color" content="#07080c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080c; --card:#10121a; --hover:#161a26; --line:#1f2433;
+    --text:#f8fafc; --mute:#94a3b8;
+    --blue:#3b82f6; --blue-l:#60a5fa; --violet:#8b5cf6; --violet-l:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:Inter,system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text); min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 75% 40% at 50% -8%, rgba(59,130,246,.18), transparent 70%),
+      radial-gradient(ellipse 55% 35% at 85% 4%, rgba(139,92,246,.15), transparent 70%);
+    background-repeat:no-repeat;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:sticky; top:0; z-index:10;
+    background:rgba(7,8,12,.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  .brand{display:flex;align-items:center;gap:14px;padding:16px 0}
+  .logo{
+    width:46px;height:46px;border-radius:14px;flex:none;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px rgba(59,130,246,.3);
+  }
+  .brand small{
+    display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    background:linear-gradient(90deg,var(--blue-l),var(--violet-l));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .brand h1{font-size:24px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+  main{padding:24px 0 40px}
+  .tabs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px;margin-bottom:22px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:none;padding:11px 20px;border-radius:12px;font:600 14px Inter,sans-serif;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);color:var(--mute);transition:.15s;
+  }
+  .tab:hover{color:var(--text);background:var(--hover)}
+  .tab.on{
+    background:linear-gradient(90deg,var(--blue),var(--violet));border-color:transparent;color:#fff;
+    font-weight:800;box-shadow:0 8px 22px rgba(59,130,246,.28);
+  }
+  .dayhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .dayhead h2{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .badge{
+    padding:3px 11px;border-radius:99px;background:var(--card);border:1px solid var(--line);
+    font-size:12px;font-weight:700;color:var(--blue-l);
+  }
+  .sub{font-size:14px;color:var(--mute);margin:6px 0 18px}
+  .list{display:grid;gap:12px}
+  .card{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;
+    color:inherit;text-decoration:none;transition:.15s;
+  }
+  a.card:hover{background:var(--hover);border-color:rgba(59,130,246,.6);transform:translateY(-1px)}
+  .left{display:flex;align-items:center;gap:14px;min-width:0}
+  .num{
+    width:34px;height:34px;border-radius:10px;flex:none;background:var(--bg);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--mute);
+  }
+  .name{font-size:16px;font-weight:700}
+  .sets{font-size:13px;color:var(--mute);margin-top:3px;font-weight:500}
+  .cue{font-size:12.5px;color:#7c879b;margin-top:5px;line-height:1.45}
+  .btn{
+    flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:12px;
+    background:var(--bg);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:#cbd5e1;transition:.15s;
+  }
+  a.card:hover .btn{background:linear-gradient(90deg,var(--blue),var(--violet));border-color:transparent;color:#fff}
+  .card.off{opacity:1}
+  .card.off .btn{color:var(--mute);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:22px 0 30px;font-size:12px;color:var(--mute)}
+  footer b{color:var(--text)}
+  @media (max-width:480px){
+    .btn span.t{display:none}
+    .btn{padding:10px 12px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.3" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>
+      </div>
+      <div>
+        <small>Hypertrophy Split &amp; Form Library</small>
+        <h1>MUSTAFA PROGRAM</h1>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <nav class="tabs" id="tabs" aria-label="Training days"></nav>
+    <div class="dayhead">
+      <h2 id="dayTitle"></h2>
+      <span class="badge" id="dayCount"></span>
+    </div>
+    <p class="sub">Tap any exercise to watch the form video.</p>
+    <div class="list" id="list"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">© <span id="yr"></span> <b>MUSTAFA PROGRAM</b></div>
+</footer>
+
+<script>
+/* =====================================================================
+   1) PASTE YOUR UNLISTED YOUTUBE LINKS HERE
+   ---------------------------------------------------------------------
+   Put each link between the quotes, like:
+     "Leg Extensions": "https://youtu.be/AbCdEfGhIjK",
+   One link per exercise is used on every day that exercise appears.
+   Leave "" empty to hide the Watch button for that exercise.
+   Right now these are placeholder tutorial videos. Replace each one
+   with your own unlisted link when you've recorded it.
+===================================================================== */
+const VIDEO_LINKS = {
+  // ----- Lower days -----
+  "Leg Extensions":      "https://www.youtube.com/watch?v=MXvSzXEBOTI",
+  "Leg Curl":            "https://www.youtube.com/watch?v=Z5pRnXaCjpM",
+  "Hack Squat":          "https://www.youtube.com/watch?v=hglQExHCM9Q",
+  "Standing Calf Raises":"https://www.youtube.com/watch?v=4HQ8Am9IuME",
+  "Abductors":           "https://www.youtube.com/watch?v=5O_Y9l__iao",
+  "Abs Crunch":          "https://www.youtube.com/watch?v=0kLWho-pEdQ",
+
+  // ----- Upper days -----
+  "Chest Fly":           "https://www.youtube.com/watch?v=hZ0CGRaKwbQ",
+  "Chest Incline":       "https://www.youtube.com/watch?v=LiDArz1R2NU",
+  "Lat Pulldown":        "https://www.youtube.com/watch?v=rpkWBC1gCcE",
+  "Upper Back Row":      "https://www.youtube.com/watch?v=zkj0nekX1TQ",
+  "Biceps Curl":         "https://www.youtube.com/watch?v=x7YQw9JR48o",
+  "Triceps Pushdown":    "https://www.youtube.com/watch?v=ChbWX35gD44",
+  "Machine Lateral Raises": "https://www.youtube.com/watch?v=IropE3iOk2c",
+  "Shoulder Press":      "https://www.youtube.com/watch?v=yUPzAHvgx40"
+};
+
+/* =====================================================================
+   2) THE SPLIT  (change sets/reps or exercises here if you want)
+===================================================================== */
+const LOWER = [
+  { name:"Leg Extensions",       cue:"Control the way down, squeeze hard at the top." },
+  { name:"Leg Curl",             cue:"Hips down, curl smooth, slow negative." },
+  { name:"Hack Squat",           cue:"Heels flat, deep controlled reps, drive up." },
+  { name:"Standing Calf Raises", cue:"Full stretch at the bottom, pause, then press up." },
+  { name:"Abductors",            cue:"Sit tall, push out, pause, slow return." },
+  { name:"Abs Crunch",           cue:"Curl ribs to pelvis, exhale at the squeeze." }
+];
+const UPPER = [
+  { name:"Chest Fly",              cue:"Soft elbows, stretch wide, squeeze chest together." },
+  { name:"Chest Incline",          cue:"Shoulder blades back, controlled lower, press smooth." },
+  { name:"Lat Pulldown",           cue:"Chest up, pull elbows down, full stretch on return." },
+  { name:"Upper Back Row",         cue:"Drive elbows back, squeeze the upper back." },
+  { name:"Biceps Curl",            cue:"Elbows pinned, no swinging, slow lowering." },
+  { name:"Triceps Pushdown",       cue:"Elbows by your sides, fully extend, control up." },
+  { name:"Machine Lateral Raises", cue:"Lead with elbows, raise to shoulder height." },
+  { name:"Shoulder Press",         cue:"Brace core, press smooth, don't flare ribs." }
+];
+const SETS = "2 sets × 6–8 reps";
+
+const SPLIT = {
+  "Upper A": UPPER,
+  "Lower A": LOWER,
+  "Upper B": UPPER,
+  "Lower B": LOWER
+};
+
+/* ===================== App (no need to edit below) ================== */
+let day = Object.keys(SPLIT)[0];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+function safeUrl(u){
+  u = String(u||"").trim();
+  if(!u) return "";
+  if(!/^https?:\/\//i.test(u)) u = "https://" + u;
+  try { return new URL(u).href; } catch(e){ return ""; }
+}
+
+function renderTabs(){
+  const el = $("tabs");
+  el.innerHTML = "";
+  Object.keys(SPLIT).forEach(d=>{
+    const b = document.createElement("button");
+    b.className = "tab" + (d===day ? " on" : "");
+    b.textContent = d;
+    b.onclick = ()=>{ day=d; renderTabs(); renderList(); };
+    el.appendChild(b);
+  });
+}
+
+function renderList(){
+  const items = SPLIT[day];
+  $("dayTitle").textContent = day;
+  $("dayCount").textContent = items.length + " Exercises";
+  const list = $("list");
+  list.innerHTML = "";
+  items.forEach((ex,i)=>{
+    const url = safeUrl(VIDEO_LINKS[ex.name]);
+    const el = document.createElement(url ? "a" : "div");
+    el.className = "card" + (url ? "" : " off");
+    if(url){ el.href = url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+    el.innerHTML =
+      '<div class="left">' +
+        '<span class="num">'+(i+1)+'</span>' +
+        '<div>' +
+          '<div class="name">'+esc(ex.name)+'</div>' +
+          '<div class="sets">'+SETS+'</div>' +
+          '<div class="cue">'+esc(ex.cue)+'</div>' +
+        '</div>' +
+      '</div>' +
+      (url ? '<span class="btn">' : '<span style="display:none">') +
+        (url
+          ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span class="t">Watch</span> Form'
+          : '') +
+      '</span>';
+    list.appendChild(el);
+  });
+}
+
+$("yr").textContent = new Date().getFullYear();
+renderTabs();
+renderList();
+</script>
+</body>
+</html>
